@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +12,11 @@
             padding: 0;
             margin: 20px 0;
         }
+
         .pagination li {
             margin: 0 5px;
         }
+
         .pagination a {
             text-decoration: none;
             padding: 8px 16px;
@@ -22,9 +25,11 @@
             border-radius: 4px;
             color: #333;
         }
+
         .pagination a:hover {
             background-color: #ddd;
         }
+
         #search-bar {
             margin-bottom: 20px;
             padding: 8px;
@@ -33,6 +38,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         #cart-button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -44,6 +50,7 @@
             bottom: 20px;
             right: 20px;
         }
+
         #cart-button:hover {
             background-color: #45a049;
         }
@@ -60,6 +67,7 @@
             justify-content: center;
             align-items: center;
         }
+
         #cart-modal-content {
             background-color: white;
             padding: 20px;
@@ -67,6 +75,7 @@
             max-width: 400px;
             width: 100%;
         }
+
         #close-modal {
             padding: 10px;
             background-color: #f44336;
@@ -76,14 +85,17 @@
             cursor: pointer;
             float: right;
         }
+
         #close-modal:hover {
             background-color: #d32f2f;
         }
+
         .cart-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
+
         .cart-item button {
             background-color: #f44336;
             color: white;
@@ -92,15 +104,18 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         .cart-item button:hover {
             background-color: #d32f2f;
         }
+
         .cart-item input {
             width: 40px;
             text-align: center;
         }
     </style>
 </head>
+
 <body>
 
     <!-- Barra de Pesquisa -->
@@ -150,7 +165,7 @@
         ];
 
         let filteredProducts = [...allProducts]; // Array filtrado com base na pesquisa
-        let cart = []; // Carrinho de compras
+        let cart = JSON.parse(localStorage.getItem('cart')) || []; // Carrinho de compras armazenado no localStorage
         const itemsPerPage = 5; // Quantidade de itens por página
         let currentPage = 1; // Página inicial
 
@@ -163,12 +178,12 @@
             const productList = document.getElementById('product-list');
             productList.innerHTML = pageProducts.map((product, index) => {
                 return `
-                    <div>
-                        <p>${product.name}</p>
-                        <p>R$ ${product.price.toFixed(2)}</p>
-                        <button onclick="addToCart(${start + index})">Adicionar ao Carrinho</button>
-                    </div>
-                `;
+                <div>
+                    <p>${product.name}</p>
+                    <p>R$ ${product.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${start + index})">Adicionar ao Carrinho</button>
+                </div>
+            `;
             }).join('');
         }
 
@@ -185,7 +200,7 @@
                 pageLink.textContent = i;
 
                 // Adiciona evento de clique na página
-                pageLink.addEventListener('click', function(event) {
+                pageLink.addEventListener('click', function (event) {
                     event.preventDefault();
                     currentPage = i;
                     showProducts(currentPage);
@@ -222,6 +237,9 @@
 
             // Atualiza o botão do carrinho
             document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
+
+            // Salva o carrinho no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
         // Função para abrir o modal do carrinho
@@ -230,16 +248,16 @@
             const cartTotal = document.getElementById('cart-total');
             cartItemsContainer.innerHTML = cart.map(item => {
                 return `
-                    <div class="cart-item">
-                        <span>${item.product.name}</span>
-                        <span>R$ ${item.product.price.toFixed(2)}</span>
-                        <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.product.name}', this.value)">
-                        <span>Subtotal: R$ ${(item.product.price * item.quantity).toFixed(2)}</span>
-                        <button onclick="removeFromCart('${item.product.name}')">Remover</button>
-                    </div>
-                `;
+                <div class="cart-item">
+                    <span>${item.product.name}</span>
+                    <span>R$ ${item.product.price.toFixed(2)}</span>
+                    <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.product.name}', this.value)">
+                    <span>Subtotal: R$ ${(item.product.price * item.quantity).toFixed(2)}</span>
+                    <button onclick="removeFromCart('${item.product.name}')">Remover</button>
+                </div>
+            `;
             }).join('');
-            
+
             const total = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
             cartTotal.textContent = total.toFixed(2);
 
@@ -253,6 +271,9 @@
 
             openCartModal(); // Atualiza o modal
             document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
+
+            // Salva o carrinho atualizado no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
         // Função para remover item do carrinho
@@ -260,6 +281,9 @@
             cart = cart.filter(item => item.product.name !== productName);
             openCartModal(); // Reabre o modal para refletir as mudanças
             document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
+
+            // Salva o carrinho atualizado no localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
         // Função para fechar o modal do carrinho
@@ -312,9 +336,18 @@
         }
 
         // Inicialização
-        showProducts(currentPage);
-        createPagination();
+        window.onload = function () {
+            // Exibe os produtos e a paginação
+            showProducts(currentPage);
+            createPagination();
+
+            // Exibe o número de itens no carrinho ao carregar a página
+            document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
+        };
     </script>
 
+
+
 </body>
+
 </html>
