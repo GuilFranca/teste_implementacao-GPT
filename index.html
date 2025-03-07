@@ -113,6 +113,11 @@
             width: 40px;
             text-align: center;
         }
+
+        /* Esconde o checkbox */
+        .hidden-checkbox {
+            display: none;
+        }
     </style>
 </head>
 
@@ -177,11 +182,16 @@
 
             const productList = document.getElementById('product-list');
             productList.innerHTML = pageProducts.map((product, index) => {
+                const productIndex = start + index;
+                const isInCart = cart.some(item => item.product.name === product.name);
                 return `
                 <div>
                     <p>${product.name}</p>
                     <p>R$ ${product.price.toFixed(2)}</p>
-                    <button onclick="addToCart(${start + index})">Adicionar ao Carrinho</button>
+                    <label>
+                        <input type="checkbox" class="hidden-checkbox" id="checkbox-${productIndex}" onchange="toggleCart(${productIndex}, this.checked)" ${isInCart ? 'checked' : ''}>
+                        Adicionar ao Carrinho
+                    </label>
                 </div>
             `;
             }).join('');
@@ -223,16 +233,21 @@
             createPagination();
         }
 
-        // Função para adicionar ao carrinho
-        function addToCart(productIndex) {
+        // Função para adicionar ao carrinho (via checkbox)
+        function toggleCart(productIndex, checked) {
             const product = allProducts[productIndex];
 
-            // Verifica se o produto já está no carrinho
-            const existingItem = cart.find(item => item.product.name === product.name);
-            if (existingItem) {
-                existingItem.quantity += 1; // Aumenta a quantidade
+            if (checked) {
+                // Adiciona ao carrinho
+                const existingItem = cart.find(item => item.product.name === product.name);
+                if (existingItem) {
+                    existingItem.quantity += 1; // Aumenta a quantidade
+                } else {
+                    cart.push({ product, quantity: 1 }); // Adiciona novo produto com quantidade 1
+                }
             } else {
-                cart.push({ product, quantity: 1 }); // Adiciona novo produto com quantidade 1
+                // Remove do carrinho
+                cart = cart.filter(item => item.product.name !== product.name);
             }
 
             // Atualiza o botão do carrinho
@@ -281,6 +296,15 @@
             cart = cart.filter(item => item.product.name !== productName);
             openCartModal(); // Reabre o modal para refletir as mudanças
             document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
+
+            // Desmarca o checkbox correspondente
+            const productIndex = allProducts.findIndex(product => product.name === productName);
+            if (productIndex !== -1) {
+                const checkbox = document.getElementById(`checkbox-${productIndex}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            }
 
             // Salva o carrinho atualizado no localStorage
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -345,9 +369,6 @@
             document.getElementById('cart-button').textContent = `Ver Carrinho (${cart.length})`;
         };
     </script>
-
-
-
 </body>
 
 </html>
