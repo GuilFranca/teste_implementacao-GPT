@@ -1,42 +1,63 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemplo de Carrinho de Compras com Quantidade</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input {
+            display: block;
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            justify-self: center
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </head>
-
 <body>
 
-    <!-- Barra de Pesquisa -->
-    <input type="text" id="search-bar" placeholder="Pesquise por um produto..." oninput="handleSearch()">
-
-    <!-- Lista de Produtos -->
-    <div id="product-list"></div>
-
-    <!-- Paginação -->
-    <ul id="pagination" class="pagination"></ul>
-
-    <!-- Botão de Carrinho -->
-    <button id="cart-button" onclick="openCartModal()">Ver Carrinho (0)</button>
-
-    <!-- Modal do Carrinho -->
-    <div id="cart-modal">
-        <div id="cart-modal-content">
-            <button id="close-modal" onclick="closeCartModal()">Fechar</button>
-            <h3>Carrinho de Compras</h3>
-            <div id="cart-items"></div>
-            <p><strong>Total: R$ <span id="cart-total">0.00</span></strong></p>
-            <button onclick="sendCartToWhatsApp()">Enviar para o WhatsApp</button>
-            <button onclick="exportToPDF()">Exportar para PDF</button>
-        </div>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Usuário">
+        <input type="password" id="password" placeholder="Senha">
+        <button onclick="login()">Entrar</button>
+        <p class="error" id="error-msg"></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="./login.js"></script>
 
-    <script src="script.js"></script>
 </body>
-
 </html>
